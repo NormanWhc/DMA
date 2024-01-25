@@ -1,0 +1,2 @@
+sequence	SMILES	expression
+UGAGGUAGUAGGUUGUAUAGUU	CC(C)/C(=C/C(=O)O[C@@H]1C[C@@H]2[C@]3(CC[C@@H](CC3=CC[C@]2([C@@]4([C@]1([C@@](CC4)(C(=O)C)O)C)O)O)O)C)/C	1

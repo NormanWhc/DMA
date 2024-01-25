@@ -1,0 +1,3 @@
+python CapBSmole.py --dti data/123.txt --protein-descripter bert --drug-descripter smole --model-name bert_smole_capsule --batch-size 64 -e 1000 -dp data -g 0 -negative 1
+python CapBMole.py --dti data/123.txt --protein-descripter bert --drug-descripter mole --model-name bert_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -negative 1
+python CapBChemberta.py --dti data/testcpu.txt --protein-descripter bert --drug-descripter chemberta --model-name bert_chemberta_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
