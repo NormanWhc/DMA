@@ -62,9 +62,9 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import ModelCheckpoint
 from keras.models import load_model
 import pickle
+from util import get_test_validation
 
-
-def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, ep, sl, path, taxonomy, batchsize=64):
+def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, ep, sl, path, taxonomy,dti, batchsize=64):
     # global model_1
     adam = Adam(learning_rate=lr)
     # adam=tf.keras.optimizers.Adam(learning_rate=lr)
@@ -288,31 +288,32 @@ if __name__ == '__main__':
 
     model_name_list = model_name.split("_")
     model_name_normal = model_name_list[0] + "_" + model_name_list[1] + "_"
-    if not os.path.exists(model_name_normal + data_prefix):
-        os.makedirs(model_name_normal + data_prefix)
-    if os.path.exists(model_name_normal + data_prefix + "/" + model_name_normal + "protein.txt"):
-        df = open(model_name_normal + data_prefix + "/" + model_name_normal + 'protein.txt', 'rb')
+    dti_name = dti.split('/')
+    if not os.path.exists(model_name_normal + data_prefix + '_' + dti_name[1]):
+        os.makedirs(model_name_normal + data_prefix + '_' + dti_name[1])
+    if os.path.exists(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + "protein.txt"):
+        df = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + 'protein.txt', 'rb')
         protein = pickle.load(df)
         df.close()
-        df = open(model_name_normal + data_prefix + "/" + model_name_normal + 'drug.txt', 'rb')
+        df = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + 'drug.txt', 'rb')
         drug = pickle.load(df)
         df.close()
-        df = open(model_name_normal + data_prefix + "/" + model_name_normal + 'y.txt', 'rb')
+        df = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + 'y.txt', 'rb')
         y = pickle.load(df)
         df.close()
     else:
         protein, drug, y = newdata(dti, protein_descripter, protein_sequence_length, drug_descripter, form_negative)
-        fw = open(model_name_normal + data_prefix + "/" + model_name_normal + "protein.txt", 'wb')
+        fw = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + "protein.txt", 'wb')
         pickle.dump(protein, fw)
         fw.close()
-        fw = open(model_name_normal + data_prefix + "/" + model_name_normal + "drug.txt", 'wb')
+        fw = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + "drug.txt", 'wb')
         pickle.dump(drug, fw)
         fw.close()
-        fw = open(model_name_normal + data_prefix + "/" + model_name_normal + "y.txt", 'wb')
+        fw = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + "y.txt", 'wb')
         pickle.dump(y, fw)
         fw.close()
 
-    train_p, test_p, train_d, test_d, train_y, test_y = split(protein, drug, y, drug_descripter, model_name)
+    train_p, test_p, train_d, test_d, train_y, test_y = split(protein, drug, y, drug_descripter, model_name,dti)
     print(train_p, train_d, train_y, "train")
     # history1, model = fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_name, learning_rate, n_epoch,
     #                           protein_sequence_length, ".", model_name, batchsize=batch_size)

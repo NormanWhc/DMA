@@ -62,9 +62,10 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import ModelCheckpoint
 from keras.models import load_model
 import pickle
+from util import get_test_validation
 
 
-def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, ep, sl, path, taxonomy, batchsize=64):
+def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, ep, sl, path, taxonomy,dti, batchsize=64):
     # global model_1
     adam = Adam(learning_rate=lr)
     # adam=tf.keras.optimizers.Adam(learning_rate=lr)
@@ -184,7 +185,7 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
             specificity = TN / float(TN + FP)
             all_acc_scores.append(accuracy)
             fw = open(os.path.join(train_path, "search_process.txt"), "a")
-            fw.write("#####Fold" + str(i) + "\n")
+            # fw.write("#####Fold" + str(i) + "\n")
             fw.write("accuracy:" + str(accuracy) + "\t")
             fw.write("specificity:" + str(specificity) + "\t")
             fw.write("recall:" + str(recall) + "\n")
@@ -412,7 +413,7 @@ if __name__ == '__main__':
         pickle.dump(y, fw)
         fw.close()
 
-    train_p, test_p, train_d, test_d, train_y, test_y = split(protein, drug, y, drug_descripter, model_name)
+    train_p, test_p, train_d, test_d, train_y, test_y = split(protein, drug, y, drug_descripter, model_name,dti)
     # history1, model = fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_name, learning_rate, n_epoch,
     #                           protein_sequence_length, ".", model_name, batchsize=batch_size)
     # model = fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_name, learning_rate, n_epoch,

@@ -179,7 +179,6 @@ def chemmolefusion(protein_list):
     # layer = MS_CAM(64, 4)
     # out = layer(feature_fusion_tensor)
     # feature = pd.DataFrame(feature_fusion)
-    print(feature_fusion)
     return feature_fusion
 
 

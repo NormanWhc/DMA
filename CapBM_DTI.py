@@ -62,9 +62,10 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import ModelCheckpoint
 from keras.models import load_model
 import pickle
+from util import get_test_validation_MPNN
 
 
-def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, ep, sl, path, taxonomy, batchsize=64):
+def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, ep, sl, path, taxonomy,dti, batchsize=64):
     # global model_1
     adam = Adam(learning_rate=lr)
     # adam=tf.keras.optimizers.Adam(learning_rate=lr)
@@ -131,29 +132,29 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
                                                 2) + "," + str(3) + "," + str(5) + "\n")
                                             fw.close()
                                             for i, (train_index, val_index) in enumerate(cv.split(train_p)):
-                                                train_p_train, train_p_val = train_p[train_index], train_p[
-                                                    val_index]
-                                                train_d0, train_d1, train_d2 = train_d
-                                                train_d0_train, train_d0_val = np.array(train_d0)[train_index], \
-                                                np.array(train_d0)[val_index]
-                                                train_d1_train, train_d1_val = np.array(train_d1)[train_index], \
-                                                np.array(train_d1)[val_index]
-                                                train_d2_train, train_d2_val = np.array(train_d2)[train_index], \
-                                                np.array(train_d2)[val_index]
-                                                train_d_train = (
-                                                tf.ragged.constant(train_d0_train, dtype=tf.float32),
-                                                tf.ragged.constant(train_d1_train, dtype=tf.float32),
-                                                tf.ragged.constant(train_d2_train, dtype=tf.int64))
-                                                train_d_val = (tf.ragged.constant(train_d0_val, dtype=tf.float32),
-                                                               tf.ragged.constant(train_d1_val, dtype=tf.float32),
-                                                               tf.ragged.constant(train_d2_val, dtype=tf.int64))
-
-                                                train_y_train, train_y_val = train_y[train_index], train_y[
-                                                    val_index]
-                                                train_dataset = MPNNDataset(train_p_train, train_d_train,
-                                                                            train_y_train)
-                                                valid_dataset = MPNNDataset(train_p_val, train_d_val, train_y_val)
-
+                                                # train_p_train, train_p_val = train_p[train_index], train_p[
+                                                #     val_index]
+                                                # train_d0, train_d1, train_d2 = train_d
+                                                # train_d0_train, train_d0_val = np.array(train_d0)[train_index], \
+                                                #     np.array(train_d0)[val_index]
+                                                # train_d1_train, train_d1_val = np.array(train_d1)[train_index], \
+                                                #     np.array(train_d1)[val_index]
+                                                # train_d2_train, train_d2_val = np.array(train_d2)[train_index], \
+                                                #     np.array(train_d2)[val_index]
+                                                # train_d_train = (
+                                                #     tf.ragged.constant(train_d0_train, dtype=tf.float32),
+                                                #     tf.ragged.constant(train_d1_train, dtype=tf.float32),
+                                                #     tf.ragged.constant(train_d2_train, dtype=tf.int64))
+                                                # train_d_val = (tf.ragged.constant(train_d0_val, dtype=tf.float32),
+                                                #                tf.ragged.constant(train_d1_val, dtype=tf.float32),
+                                                #                tf.ragged.constant(train_d2_val, dtype=tf.int64))
+                                                #
+                                                # train_y_train, train_y_val = train_y[train_index], train_y[
+                                                #     val_index]
+                                                # train_dataset = MPNNDataset(train_p_train, train_d_train,
+                                                #                             train_y_train)
+                                                # valid_dataset = MPNNDataset(train_p_val, train_d_val, train_y_val)
+                                                train_y_val,train_dataset,valid_dataset = get_test_validation_MPNN(train_p, train_d, train_y, dti)
                                                 model_1 = model_bert_MPNN_capsule(
                                                     # target_dense=target_dense,
                                                     #                                 batch_size=batch_size,
@@ -198,7 +199,7 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
                                                 area = metrics.auc(recall, precision0)
                                                 recall = recall_score(np.array(train_y_val)[:, 1], pred)
                                                 fw = open(os.path.join(train_path, "search_process.txt"), "a")
-                                                fw.write("#####Fold" + str(i) + "\n")
+                                                # fw.write("#####Fold" + str(i) + "\n")
                                                 fw.write("accuracy:" + str(round(accuracy, 4)) + "\t")
                                                 fw.write("specificity:" + str(round(specificity, 4)) + "\t")
                                                 fw.write("sensitivity:" + str(round(recall, 4)) + "\t")
@@ -237,7 +238,7 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
             np.mean(all_aucroc)) + "±" + str(np.std(all_aucroc)) + str(
             np.mean(all_aupr)) + "±" + str(np.std(all_aupr)) + str(
             np.mean(all_f1)) + "±" + str(np.std(all_f1)) + "\n")
-        df = pd.DataFrame({"classifier": [model_type], "accuracy": [
+        df = pd.DataFrame({"dataset":[dti],"classifier": [model_type], "accuracy": [
             str(best_score) + "±" + str(np.std(all_acc_scores))], "specificity": [
             str(np.mean(all_specificity)) + "±" + str(np.std(all_specificity))],
                            "sensitivity": [str(np.mean(all_sensitivity)) + "±" + str(
@@ -247,9 +248,7 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
                            "f1": [str(np.mean(all_f1)) + "±" + str(np.std(all_f1))]})
         df.to_csv("./result/5fold-performance.csv", mode="a", index=None)
         fw.close()
-        param = {"target_dense": best_target_dense, "seq_len": sl, "drug_dense": best_target_dense,
-                 "kernel_size": best_kernel_size, "num_capsule": best_num_capsule, "routings": best_routings}
-        model_1 = model_bert_MPNN_capsule(param)
+        model_1 = model_bert_MPNN_capsule()
         model_1.compile(loss="binary_crossentropy", optimizer=adam,
                         metrics=[custom_f1, 'accuracy', 'AUC', tf.keras.metrics.Precision(), tf.keras.metrics.Recall(),
                                  tf.keras.metrics.TruePositives(), tf.keras.metrics.TrueNegatives(),
@@ -275,8 +274,8 @@ def evaluate(model_parh, test_p, test_d, test_y, model_name):
     print("=============Start Evaluate! ===========", flush=True)
     # print(model_name)
     model = load_model(model_parh, compile=False,
-                           custom_objects={'Capsule': Capsule, 'Length': Length, 'MessagePassing': MessagePassing,
-                                           'TransformerEncoderReadout': TransformerEncoderReadout})
+                       custom_objects={'Capsule': Capsule, 'Length': Length, 'MessagePassing': MessagePassing,
+                                       'TransformerEncoderReadout': TransformerEncoderReadout})
     if (model_name.find("MPNN") == -1):
         pred0 = model.predict([test_p, np.array(test_d)])  # 输出的是整数标签
     else:
@@ -325,7 +324,7 @@ def evaluate(model_parh, test_p, test_d, test_y, model_name):
         fw.write("Value" + "\t" + str(round(sensitivity, 3)) + "\t" + str(round(specificity, 3)) + "\t" + str(
             round(precision, 3)) + "\t" + str(round(accuracy, 3)) + "\t" + str(round(f1, 3)) + "\t" + str(
             round(auc_v, 3)) + "\t" + str(round(area, 3)) + "\n")
-        df_evaluate = pd.DataFrame({"classifier": [model_name], "accuracy": [
+        df_evaluate = pd.DataFrame({"dataset":[dti],"classifier": [model_name], "accuracy": [
             str(accuracy)], "specificity": [
             str(specificity)],
                                     "sensitivity": [str(sensitivity)], "aucroc": [
@@ -425,32 +424,33 @@ if __name__ == '__main__':
 
     model_name_list = model_name.split("_")
     model_name_normal = model_name_list[0] + "_" + model_name_list[1] + "_"
-    if not os.path.exists(model_name_normal + data_prefix):
-        os.makedirs(model_name_normal + data_prefix)
-    if os.path.exists(model_name_normal + data_prefix + "/" + model_name_normal + "protein.txt"):
-        df = open(model_name_normal + data_prefix + "/" + model_name_normal + 'protein.txt', 'rb')
+    dti_name = dti.split('/')
+    if not os.path.exists(model_name_normal + data_prefix + '_' + dti_name[1]):
+        os.makedirs(model_name_normal + data_prefix + '_' + dti_name[1])
+    if os.path.exists(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + "protein.txt"):
+        df = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + 'protein.txt', 'rb')
         protein = pickle.load(df)
         df.close()
-        df = open(model_name_normal + data_prefix + "/" + model_name_normal + 'drug.txt', 'rb')
+        df = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + 'drug.txt', 'rb')
         drug = pickle.load(df)
         df.close()
-        df = open(model_name_normal + data_prefix + "/" + model_name_normal + 'y.txt', 'rb')
+        df = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + 'y.txt', 'rb')
         y = pickle.load(df)
         df.close()
     else:
         protein, drug, y = newdata(dti, protein_descripter, protein_sequence_length, drug_descripter, form_negative)
-        fw = open(model_name_normal + data_prefix + "/" + model_name_normal + "protein.txt", 'wb')
+        fw = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + "protein.txt", 'wb')
         pickle.dump(protein, fw)
         fw.close()
-        fw = open(model_name_normal + data_prefix + "/" + model_name_normal + "drug.txt", 'wb')
+        fw = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + "drug.txt", 'wb')
         pickle.dump(drug, fw)
         fw.close()
-        fw = open(model_name_normal + data_prefix + "/" + model_name_normal + "y.txt", 'wb')
+        fw = open(model_name_normal + data_prefix + '_' + dti_name[1] + "/" + model_name_normal + "y.txt", 'wb')
         pickle.dump(y, fw)
         fw.close()
 
-    train_p, test_p, train_d, test_d, train_y, test_y = split(protein, drug, y, drug_descripter, model_name)
+    train_p, test_p, train_d, test_d, train_y, test_y = split(protein, drug, y, drug_descripter, model_name, dti)
     history1, model = fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_name, learning_rate, n_epoch,
-                              protein_sequence_length, ".", model_name, batchsize=batch_size)
+                              protein_sequence_length, ".", model_name,dti, batchsize=batch_size)
     evaluate("./" + model_name + "/" + model_name + ".ckpt", test_p, test_d, test_y, model_name)
     History(history1, model_name)

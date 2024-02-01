@@ -53,19 +53,22 @@ def onehot(seq_list, seq_len):
     return X
 
 def newdata(dti_fname, protein_encoder, seq_len, drug_encoder, form_negative):
-    dti_df = pd.read_csv(dti_fname, sep="\t")
     # dti_df
     # if form_negative == 1:
     # 创建空的DataFrame
-    dti_df['sequence'] = dti_df['sequence'].str.replace('U', 'T')
+    dti_df = pd.read_csv(dti_fname)
+    # proteins = pd.read_csv("data/sequence.txt", sep="\t")
+    # drugs = pd.read_csv("data/drug.txt", sep="\t")
+    # # dti_df
+    # # if form_negative == 1:
+    # # 创建空的DataFrame
+    # dti_df['sequence'] = dti_df['sequence'].str.replace('U', 'T')
     # length = len(dti_df["sequence"])
     # # 获取所有的protein和drug，并按顺序排列
-    # proteins = sorted(dti_df["sequence"])
-    # drugs = sorted(dti_df["SMILES"].unique())
     # df = pd.DataFrame(columns=['sequence', 'SMILES', 'expression'])
     #
-    # for protein in tqdm(proteins, desc='Proteins'):
-    #     for drug in tqdm(drugs, desc='Drugs', leave=False):
+    # for protein in tqdm(proteins["sequence_unique"], desc='Proteins'):
+    #     for drug in tqdm(drugs['SMILES_unique'], desc='Drugs', leave=False):
     #         # 查找data1中对应关系的label
     #         label = dti_df[(dti_df["sequence"] == protein) & (dti_df["SMILES"] == drug)]["expression"].values
     #         if len(label) == 0 or label[0] == 0:
@@ -79,7 +82,7 @@ def newdata(dti_fname, protein_encoder, seq_len, drug_encoder, form_negative):
     #
     # negative = df.sample(n=length, replace=False, random_state=11)
     # # 输出结果
-    # data1 = pd.concat([dti_df,negative], ignore_index=True)
+    # data1 = pd.concat([dti_df, negative], ignore_index=True)
     # else:
 
     data1 = dti_df
@@ -181,4 +184,7 @@ def newdata(dti_fname, protein_encoder, seq_len, drug_encoder, form_negative):
 
     # print("protein data:"+str(protein_df.shape))
     # print("label:"+str(len(y)))
+    print(drug_df_list)
     return np.array(protein_df), np.array(drug_df_list), y
+if __name__ == 'main':
+    newdata('data/SM2miR4.txt','bert',1024,'chemmolefusion',1)

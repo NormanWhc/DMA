@@ -62,9 +62,10 @@ from keras.callbacks import CSVLogger
 from keras.callbacks import ModelCheckpoint
 from keras.models import load_model
 import pickle
+from util import get_test_validation
 
 
-def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, ep, sl, path, taxonomy, batchsize=64):
+def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, ep, sl, path, taxonomy,dti, batchsize=64):
     # global model_1
     adam = Adam(learning_rate=lr)
     # adam=tf.keras.optimizers.Adam(learning_rate=lr)
@@ -123,67 +124,69 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
                                                 num_attention_heads) + "," + str(dense_units) + "," + str(
                                                 num_capsule) + "," + str(routings) + "," + str(kernel_size) + "\n")
                                             fw.close()
-                                            for i, (train_index, val_index) in enumerate(cv.split(train_p,train_d)):
-                                                train_p_train, train_p_val = train_p[train_index], train_p[val_index]
-                                                train_d_train, train_d_val = np.array(train_d)[train_index], np.array(train_d)[val_index]
-                                                train_y_train, train_y_val = train_y[train_index], train_y[val_index]
-                                                # train_d0, train_d1, train_d2 = train_d
-                                                # train_d0_train, train_d0_val = np.array(train_d0)[train_index], np.array(train_d0)[val_index]
-                                                # train_d1_train, train_d1_val = np.array(train_d1)[train_index], np.array(train_d1)[val_index]
-                                                # train_d2_train, train_d2_val = np.array(train_d2)[train_index], np.array(train_d2)[val_index]
-                                                # train_d_train = (
-                                                #     tf.ragged.constant(train_d0_train, dtype=tf.float32),
-                                                #     tf.ragged.constant(train_d1_train, dtype=tf.float32),
-                                                #     tf.ragged.constant(train_d2_train, dtype=tf.int64))
-                                                # train_d_val = (tf.ragged.constant(train_d0_val, dtype=tf.float32),
-                                                #                tf.ragged.constant(train_d1_val, dtype=tf.float32),
-                                                #                tf.ragged.constant(train_d2_val, dtype=tf.int64))
-                                                # train_y_train, train_y_val = train_y[train_index], train_y[
-                                                #     val_index]
-                                                # train_dataset = MPNNDataset(train_p_train, train_d_train,
-                                                #                             train_y_train)
-                                                # valid_dataset = MPNNDataset(train_p_val, train_d_val, train_y_val)
-                                                param = {"target_dense": target_dense, "seq_len": sl,
-                                                         "drug_dense": target_dense, "kernel_size": kernel_size,
-                                                         "num_capsule": num_capsule, "routings": routings}
-                                                model_1 = model_genalm_fingerprint_capsule(param=param)
-                                                model_1.compile(loss="binary_crossentropy", optimizer=adam,
-                                                                metrics=[custom_f1, 'accuracy', 'AUC',
-                                                                         tf.keras.metrics.Precision(),
-                                                                         tf.keras.metrics.Recall(),
-                                                                         tf.keras.metrics.TruePositives(),
-                                                                         tf.keras.metrics.TrueNegatives(),
-                                                                         tf.keras.metrics.FalsePositives(),
-                                                                         tf.keras.metrics.FalseNegatives()])
-                                                lrate = LearningRateScheduler(step_decay)
-                                                Early = EarlyStopping(monitor="accuracy", mode='max', patience=50,
-                                                                      verbose=1, restore_best_weights=True)
+                                            # for i, (train_index, val_index) in enumerate(cv.split(train_p,train_d)):
+                                                # train_p_train, train_p_val = train_p[train_index], train_p[val_index]
+                                                # train_d_train, train_d_val = np.array(train_d)[train_index], np.array(train_d)[val_index]
+                                                # train_y_train, train_y_val = train_y[train_index], train_y[val_index]
+                                            train_p_train, train_p_val, train_d_train, train_d_val, train_y_train, train_y_val = get_test_validation(
+                                                train_p, train_d, train_y, dti)
+                                            # train_d0, train_d1, train_d2 = train_d
+                                            # train_d0_train, train_d0_val = np.array(train_d0)[train_index], np.array(train_d0)[val_index]
+                                            # train_d1_train, train_d1_val = np.array(train_d1)[train_index], np.array(train_d1)[val_index]
+                                            # train_d2_train, train_d2_val = np.array(train_d2)[train_index], np.array(train_d2)[val_index]
+                                            # train_d_train = (
+                                            #     tf.ragged.constant(train_d0_train, dtype=tf.float32),
+                                            #     tf.ragged.constant(train_d1_train, dtype=tf.float32),
+                                            #     tf.ragged.constant(train_d2_train, dtype=tf.int64))
+                                            # train_d_val = (tf.ragged.constant(train_d0_val, dtype=tf.float32),
+                                            #                tf.ragged.constant(train_d1_val, dtype=tf.float32),
+                                            #                tf.ragged.constant(train_d2_val, dtype=tf.int64))
+                                            # train_y_train, train_y_val = train_y[train_index], train_y[
+                                            #     val_index]
+                                            # train_dataset = MPNNDataset(train_p_train, train_d_train,
+                                            #                             train_y_train)
+                                            # valid_dataset = MPNNDataset(train_p_val, train_d_val, train_y_val)
+                                            param = {"target_dense": target_dense, "seq_len": sl,
+                                                     "drug_dense": target_dense, "kernel_size": kernel_size,
+                                                     "num_capsule": num_capsule, "routings": routings}
+                                            model_1 = model_genalm_fingerprint_capsule(param=param)
+                                            model_1.compile(loss="binary_crossentropy", optimizer=adam,
+                                                            metrics=[custom_f1, 'accuracy', 'AUC',
+                                                                     tf.keras.metrics.Precision(),
+                                                                     tf.keras.metrics.Recall(),
+                                                                     tf.keras.metrics.TruePositives(),
+                                                                     tf.keras.metrics.TrueNegatives(),
+                                                                     tf.keras.metrics.FalsePositives(),
+                                                                     tf.keras.metrics.FalseNegatives()])
+                                            lrate = LearningRateScheduler(step_decay)
+                                            Early = EarlyStopping(monitor="accuracy", mode='max', patience=50,
+                                                                  verbose=1, restore_best_weights=True)
 
-                                                # model_1.fit([train_p,train_d],train_y, epochs=ep,
-                                                #             batch_size=batchsize,
-                                                #             verbose=2,
-                                                #             callbacks=[lrate, Early])  # callbacks=[lrate,Early]
-                                                model_1.fit([train_p_train,train_d_train],train_y_train, epochs=ep,
-                                                            batch_size=batchsize,
-                                                            verbose=2,
-                                                            callbacks=[lrate, Early])  # callbacks=[lrate,Early]
-                                                # pred0 = model_1.predict([train_p,train_p])
-                                                pred0 = model_1.predict([train_p_val,train_d_val])
-                                                pred = np.argmax(pred0, -1)
-                                                print(pred.shape, np.array(train_y).shape, "pred")
-                                                confusion = metrics.confusion_matrix(np.array(train_y_val)[:, 1], pred)
-                                                TN = confusion[0, 0]
-                                                FP = confusion[0, 1]
-                                                accuracy = accuracy_score(np.array(train_y_val)[:, 1], pred)
-                                                recall = recall_score(np.array(train_y_val)[:, 1], pred)
-                                                specificity = TN / float(TN + FP)
-                                                all_acc_scores.append(accuracy)
-                                                fw = open(os.path.join(train_path, "search_process.txt"), "a")
-                                                fw.write("#####Fold" + str(i) + "\n")
-                                                fw.write("accuracy:" + str(accuracy) + "\t")
-                                                fw.write("specificity:" + str(specificity) + "\t")
-                                                fw.write("recall:" + str(recall) + "\n")
-                                                fw.close()
+                                            # model_1.fit([train_p,train_d],train_y, epochs=ep,
+                                            #             batch_size=batchsize,
+                                            #             verbose=2,
+                                            #             callbacks=[lrate, Early])  # callbacks=[lrate,Early]
+                                            model_1.fit([train_p_train,train_d_train],train_y_train, epochs=ep,
+                                                        batch_size=batchsize,
+                                                        verbose=2,
+                                                        callbacks=[lrate, Early])  # callbacks=[lrate,Early]
+                                            # pred0 = model_1.predict([train_p,train_p])
+                                            pred0 = model_1.predict([train_p_val,train_d_val])
+                                            pred = np.argmax(pred0, -1)
+                                            print(pred.shape, np.array(train_y).shape, "pred")
+                                            confusion = metrics.confusion_matrix(np.array(train_y_val)[:, 1], pred)
+                                            TN = confusion[0, 0]
+                                            FP = confusion[0, 1]
+                                            accuracy = accuracy_score(np.array(train_y_val)[:, 1], pred)
+                                            recall = recall_score(np.array(train_y_val)[:, 1], pred)
+                                            specificity = TN / float(TN + FP)
+                                            all_acc_scores.append(accuracy)
+                                            fw = open(os.path.join(train_path, "search_process.txt"), "a")
+                                            # fw.write("#####Fold" + str(i) + "\n")
+                                            fw.write("accuracy:" + str(accuracy) + "\t")
+                                            fw.write("specificity:" + str(specificity) + "\t")
+                                            fw.write("recall:" + str(recall) + "\n")
+                                            fw.close()
                                             score = np.mean(all_acc_scores)
                                             if score > best_score:
                                                 fw = open(os.path.join(train_path, "search_process.txt"), "a")
@@ -404,10 +407,10 @@ if __name__ == '__main__':
         pickle.dump(y, fw)
         fw.close()
 
-    train_p, test_p, train_d, test_d, train_y, test_y = split(protein, drug, y, drug_descripter, model_name)
+    train_p, test_p, train_d, test_d, train_y, test_y = split(protein, drug, y, drug_descripter, model_name,dti)
     print(train_p, train_d, train_y, "train")
     history1, model = fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_name, learning_rate, n_epoch,
-                              protein_sequence_length, ".", model_name, batchsize=batch_size)
+                              protein_sequence_length, ".", model_name,dti, batchsize=batch_size)
     # model = fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_name, learning_rate, n_epoch,
     #                           protein_sequence_length, ".", model_name, batchsize=batch_size)
     evaluate("./" + model_name + "/" + model_name + ".ckpt", test_p, test_d, test_y, model_name)
