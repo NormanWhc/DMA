@@ -128,12 +128,12 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
                                                 num_attention_heads) + "," + str(dense_units) + "," + str(
                                                 num_capsule) + "," + str(routings) + "," + str(kernel_size) + "\n")
                                             fw.close()
-                                            # for i, (train_index, val_index) in enumerate(cv.split(train_p,train_d)):
-                                                # train_p_train, train_p_val = train_p[train_index], train_p[val_index]
-                                                # train_d_train, train_d_val = np.array(train_d)[train_index], np.array(train_d)[val_index]
-                                                # train_y_train, train_y_val = train_y[train_index], train_y[val_index]
-                                            train_p_train, train_p_val, train_d_train, train_d_val, train_y_train, train_y_val = get_test_validation(
-                                                train_p, train_d, train_y, dti)
+                                            for i, (train_index, val_index) in enumerate(cv.split(train_p,train_d)):
+                                                train_p_train, train_p_val = train_p[train_index], train_p[val_index]
+                                                train_d_train, train_d_val = np.array(train_d)[train_index], np.array(train_d)[val_index]
+                                                train_y_train, train_y_val = train_y[train_index], train_y[val_index]
+                                            # train_p_train, train_p_val, train_d_train, train_d_val, train_y_train, train_y_val = get_test_validation(
+                                            #     train_p, train_d, train_y, dti)
                                             # train_d0, train_d1, train_d2 = train_d
                                             # train_d0_train, train_d0_val = np.array(train_d0)[train_index], np.array(train_d0)[val_index]
                                             # train_d1_train, train_d1_val = np.array(train_d1)[train_index], np.array(train_d1)[val_index]
@@ -150,62 +150,62 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
                                             # train_dataset = MPNNDataset(train_p_train, train_d_train,
                                             #                             train_y_train)
                                             # valid_dataset = MPNNDataset(train_p_val, train_d_val, train_y_val)
-                                            param = {"target_dense": target_dense, "seq_len": sl,
-                                                     "drug_dense": target_dense, "kernel_size": kernel_size,
-                                                     "num_capsule": num_capsule, "routings": routings}
-                                            model_1 = model_bert_chemberta_dense(param=param)
-                                            model_1.compile(loss="binary_crossentropy", optimizer=adam,
-                                                            metrics=[custom_f1, 'accuracy', 'AUC',
-                                                                     tf.keras.metrics.Precision(),
-                                                                     tf.keras.metrics.Recall(),
-                                                                     tf.keras.metrics.TruePositives(),
-                                                                     tf.keras.metrics.TrueNegatives(),
-                                                                     tf.keras.metrics.FalsePositives(),
-                                                                     tf.keras.metrics.FalseNegatives()])
-                                            lrate = LearningRateScheduler(step_decay)
-                                            Early = EarlyStopping(monitor="accuracy", mode='max', patience=50,
-                                                                  verbose=1, restore_best_weights=True)
+                                                param = {"target_dense": target_dense, "seq_len": sl,
+                                                         "drug_dense": target_dense, "kernel_size": kernel_size,
+                                                         "num_capsule": num_capsule, "routings": routings}
+                                                model_1 = model_bert_chemberta_dense(param=param)
+                                                model_1.compile(loss="binary_crossentropy", optimizer=adam,
+                                                                metrics=[custom_f1, 'accuracy', 'AUC',
+                                                                         tf.keras.metrics.Precision(),
+                                                                         tf.keras.metrics.Recall(),
+                                                                         tf.keras.metrics.TruePositives(),
+                                                                         tf.keras.metrics.TrueNegatives(),
+                                                                         tf.keras.metrics.FalsePositives(),
+                                                                         tf.keras.metrics.FalseNegatives()])
+                                                lrate = LearningRateScheduler(step_decay)
+                                                Early = EarlyStopping(monitor="accuracy", mode='max', patience=50,
+                                                                      verbose=1, restore_best_weights=True)
 
-                                            # model_1.fit([train_p,train_d],train_y, epochs=ep,
-                                            #             batch_size=batchsize,
-                                            #             verbose=2,
-                                            #             callbacks=[lrate, Early])  # callbacks=[lrate,Early]
-                                            model_1.fit([train_p_train,train_d_train],train_y_train, epochs=ep,
-                                                        batch_size=batchsize,
-                                                        verbose=2,
-                                                        callbacks=[lrate, Early])  # callbacks=[lrate,Early]
-                                            # pred0 = model_1.predict([train_p,train_p])
-                                            pred0 = model_1.predict([train_p_val, train_d_val])
-                                            pred = np.argmax(pred0, -1)
-                                            confusion = metrics.confusion_matrix(np.array(train_y_val)[:, 1], pred)
-                                            TN = confusion[0, 0]
-                                            FP = confusion[0, 1]
-                                            accuracy = accuracy_score(np.array(train_y_val)[:, 1], pred)
-                                            specificity = TN / float(TN + FP)
+                                                # model_1.fit([train_p,train_d],train_y, epochs=ep,
+                                                #             batch_size=batchsize,
+                                                #             verbose=2,
+                                                #             callbacks=[lrate, Early])  # callbacks=[lrate,Early]
+                                                model_1.fit([train_p_train,train_d_train],train_y_train, epochs=ep,
+                                                            batch_size=batchsize,
+                                                            verbose=2,
+                                                            callbacks=[lrate, Early])  # callbacks=[lrate,Early]
+                                                # pred0 = model_1.predict([train_p,train_p])
+                                                pred0 = model_1.predict([train_p_val, train_d_val])
+                                                pred = np.argmax(pred0, -1)
+                                                confusion = metrics.confusion_matrix(np.array(train_y_val)[:, 1], pred)
+                                                TN = confusion[0, 0]
+                                                FP = confusion[0, 1]
+                                                accuracy = accuracy_score(np.array(train_y_val)[:, 1], pred)
+                                                specificity = TN / float(TN + FP)
 
-                                            fpr0, tpr0, thresholds0 = metrics.roc_curve(np.array(train_y_val)[:, 1],
-                                                                                        pred)
-                                            f1 = f1_score(np.array(train_y_val)[:, 1], pred)
-                                            auc_v = metrics.auc(fpr0, tpr0)
-                                            precision0, recall, thresholds = metrics.precision_recall_curve(
-                                                np.array(train_y_val)[:, 1], pred)
-                                            area = metrics.auc(recall, precision0)
-                                            recall = recall_score(np.array(train_y_val)[:, 1], pred)
-                                            fw = open(os.path.join(train_path, "search_process.txt"), "a")
-                                            # fw.write("#####Fold" + str(i) + "\n")
-                                            fw.write("accuracy:" + str(round(accuracy, 4)) + "\t")
-                                            fw.write("specificity:" + str(round(specificity, 4)) + "\t")
-                                            fw.write("sensitivity:" + str(round(recall, 4)) + "\t")
-                                            fw.write("aucroc:" + str(round(auc_v, 4)) + "\t")
-                                            fw.write("aupr:" + str(round(area, 4)) + "\t")
-                                            fw.write("f1:" + str(round(f1, 4)) + "\n")
-                                            all_acc_scores.append(accuracy)
-                                            all_f1.append(f1)
-                                            all_aupr.append(area)
-                                            all_aucroc.append(auc_v)
-                                            all_specificity.append(specificity)
-                                            all_sensitivity.append(recall)
-                                            fw.close()
+                                                fpr0, tpr0, thresholds0 = metrics.roc_curve(np.array(train_y_val)[:, 1],
+                                                                                            pred)
+                                                f1 = f1_score(np.array(train_y_val)[:, 1], pred)
+                                                auc_v = metrics.auc(fpr0, tpr0)
+                                                precision0, recall, thresholds = metrics.precision_recall_curve(
+                                                    np.array(train_y_val)[:, 1], pred)
+                                                area = metrics.auc(recall, precision0)
+                                                recall = recall_score(np.array(train_y_val)[:, 1], pred)
+                                                fw = open(os.path.join(train_path, "search_process.txt"), "a")
+                                                # fw.write("#####Fold" + str(i) + "\n")
+                                                fw.write("accuracy:" + str(round(accuracy, 4)) + "\t")
+                                                fw.write("specificity:" + str(round(specificity, 4)) + "\t")
+                                                fw.write("sensitivity:" + str(round(recall, 4)) + "\t")
+                                                fw.write("aucroc:" + str(round(auc_v, 4)) + "\t")
+                                                fw.write("aupr:" + str(round(area, 4)) + "\t")
+                                                fw.write("f1:" + str(round(f1, 4)) + "\n")
+                                                all_acc_scores.append(accuracy)
+                                                all_f1.append(f1)
+                                                all_aupr.append(area)
+                                                all_aucroc.append(auc_v)
+                                                all_specificity.append(specificity)
+                                                all_sensitivity.append(recall)
+                                                fw.close()
 
                                             score = np.mean(all_acc_scores)
                                             if score > best_score:

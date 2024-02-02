@@ -1,55 +1,11 @@
-python CapBMole.py --dti data/ncDR.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python DenseBMole.py --dti data/ncDR.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python AttenBMole.py --dti data/ncDR.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_attention --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python CapOMole.py --dti data/ncDR.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseOMole.py --dti data/ncDR.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python CapBSmoleMoleFusion.py --dti data/ncDR.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseBSmoleMoleFusion.py --dti data/ncDR.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python AttenBSmoleMoleFusion.py --dti data/ncDR.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_attention --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python CapBChemMoleFusion.py --dti data/ncDR.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseBChemMoleFusion.py --dti data/ncDR.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python AttenBChemMoleFusion.py --dti data/ncDR.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_attention --batch-size 64 -e 1000 -dp data
-python CapBMole.py --dti data/RNAInter.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python DenseBMole.py --dti data/RNAInter.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python AttenBMole.py --dti data/RNAInter.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_attention --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python CapOMole.py --dti data/RNAInter.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseOMole.py --dti data/RNAInter.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python CapBSmoleMoleFusion.py --dti data/RNAInter.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseBSmoleMoleFusion.py --dti data/RNAInter.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python AttenBSmoleMoleFusion.py --dti data/RNAInter.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_attention --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python CapBChemMoleFusion.py --dti data/RNAInter.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseBChemMoleFusion.py --dti data/RNAInter.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python AttenBChemMoleFusion.py --dti data/RNAInter.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_attention --batch-size 64 -e 1000 -dp data
-python CapBMole.py --dti data/SM2miR1.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python DenseBMole.py --dti data/SM2miR1.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python AttenBMole.py --dti data/SM2miR1.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_attention --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python CapOMole.py --dti data/SM2miR1.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseOMole.py --dti data/SM2miR1.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python CapBSmoleMoleFusion.py --dti data/SM2miR1.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseBSmoleMoleFusion.py --dti data/SM2miR1.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python AttenBSmoleMoleFusion.py --dti data/SM2miR1.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_attention --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python CapBChemMoleFusion.py --dti data/SM2miR1.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseBChemMoleFusion.py --dti data/SM2miR1.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python AttenBChemMoleFusion.py --dti data/SM2miR1.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_attention --batch-size 64 -e 1000 -dp data
-python CapBMole.py --dti data/SM2miR2.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python DenseBMole.py --dti data/SM2miR2.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python AttenBMole.py --dti data/SM2miR2.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_attention --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python CapOMole.py --dti data/SM2miR2.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseOMole.py --dti data/SM2miR2.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python CapBSmoleMoleFusion.py --dti data/SM2miR2.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseBSmoleMoleFusion.py --dti data/SM2miR2.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python AttenBSmoleMoleFusion.py --dti data/SM2miR2.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_attention --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python CapBChemMoleFusion.py --dti data/SM2miR2.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseBChemMoleFusion.py --dti data/SM2miR2.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python AttenBChemMoleFusion.py --dti data/SM2miR2.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_attention --batch-size 64 -e 1000 -dp data
-python CapBMole.py --dti data/SM2miR3.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python DenseBMole.py --dti data/SM2miR3.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python AttenBMole.py --dti data/SM2miR3.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_attention --batch-size 64 -e 1000 -dp data -g 0 -negative 1
-python CapOMole.py --dti data/SM2miR3.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseOMole.py --dti data/SM2miR3.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python CapBSmoleMoleFusion.py --dti data/SM2miR3.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseBSmoleMoleFusion.py --dti data/SM2miR3.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python AttenBSmoleMoleFusion.py --dti data/SM2miR3.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_attention --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python CapBChemMoleFusion.py --dti data/SM2miR3.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python DenseBChemMoleFusion.py --dti data/SM2miR3.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
-python AttenBChemMoleFusion.py --dti data/SM2miR3.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_attention --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
+python CapBMole.py --dti data/all.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -negative 1
+python DenseBMole.py --dti data/all.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -negative 1
+python AttenBMole.py --dti data/all.csv --protein-descripter bert --drug-descripter mole --model-name bert_mole_attention --batch-size 64 -e 1000 -dp data -g 0 -negative 1
+python CapOMole.py --dti data/all.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
+python DenseOMole.py --dti data/all.csv --protein-descripter onehot --drug-descripter mole --model-name onehot_mole_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
+python CapBSmoleMoleFusion.py --dti data/all.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
+python DenseBSmoleMoleFusion.py --dti data/all.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
+python AttenBSmoleMoleFusion.py --dti data/all.csv --protein-descripter bert --drug-descripter smolemolefusion --model-name bert_smolemolefusion_attention --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
+python CapBChemMoleFusion.py --dti data/all.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_capsule --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
+python DenseBChemMoleFusion.py --dti data/all.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_dense --batch-size 64 -e 1000 -dp data -g 0 -sl 1024 -negative 1
+python AttenBChemMoleFusion.py --dti data/all.csv --protein-descripter bert --drug-descripter chemmolefusion --model-name bert_chemmolefusion_attention --batch-size 64 -e 1000 -dp data

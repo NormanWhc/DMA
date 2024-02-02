@@ -617,6 +617,7 @@ def molebert(drug_list):
     drug_fingerprint_list = []
     for x, drug in enumerate(drug_list):
         rdkit_mol = AllChem.MolFromSmiles(drug_list[x])
+        print("SMILES number:",x)
         data = mol_to_graph_data_obj_simple(rdkit_mol)
 
         device = torch.device("cuda:" + str(0)) if torch.cuda.is_available() else torch.device("cpu")
@@ -635,7 +636,7 @@ def molebert(drug_list):
     return features
 
 if __name__ == '__main__':
-    dti_df = pd.read_csv("./data/new_data.txt",sep=" ")
+    dti_df = pd.read_csv("./data/RNAInter.csv")
     protein_list = dti_df["SMILES"].tolist()
     molebert(protein_list)
     # print(protein_list)

@@ -170,6 +170,33 @@ def split(protein, drug, y, drug_encoder, name,dti):
             # fw.write(str(train_p.shape) + "\t" + str(test_p.shape) + "\t" + str(train_d.shape) + "\t" + str(
             #     test_d.shape) + "\t" + str(len(train_y)) + "\t" + str(len(test_y)))
         # print(drug[0], "drug[0]",train_d,"train_d",test_d,"test_d")
+    if dti == 'data/SM2miR3.csv':
+        if drug_encoder == "MPNN":
+            train_p = protein[:8188, :]
+            train_d0 = drug[0][0][:8188, :]
+            train_d1 = drug[0][1][:8188, :]
+            train_d2 = drug[0][2][:8188, :]
+            train_y = y[:8188]
+            test_p = protein[8188:, :]
+            test_d0 = drug[0][0][8188:, :]
+            test_d1 = drug[0][1][8188:, :]
+            test_d2 = drug[0][2][8188:, :]
+            test_y = y[8188:]
+            test_d = (tf.ragged.constant(test_d0, dtype=tf.float32), tf.ragged.constant(test_d1, dtype=tf.float32),
+                      tf.ragged.constant(test_d2, dtype=tf.int64))
+            train_d = (train_d0, train_d1, train_d2)
+        else:
+            train_p = protein[:8188, :]
+            train_d = drug[0][:8188, :]
+            train_y = y[:8188]
+            test_p = protein[8188:, :]
+            test_d = drug[0][8188:, :]
+            test_y = y[8188:]
+        with open(name + "/sample_summary.txt", "w") as fw:
+            fw.write("train_protein\ttest_protein\ttrain_drug\ttest_drug\ttrain_y\ttest_y\n")
+            # fw.write(str(train_p.shape) + "\t" + str(test_p.shape) + "\t" + str(train_d.shape) + "\t" + str(
+            #     test_d.shape) + "\t" + str(len(train_y)) + "\t" + str(len(test_y)))
+        # print(drug[0], "drug[0]",train_d,"train_d",test_d,"test_d")
     else:
         if drug_encoder == "fingerprint":
             train_p, test_p, train_d, test_d, train_y, test_y = train_test_split(protein, drug[0], y, test_size=0.2,
