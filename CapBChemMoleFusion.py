@@ -3,6 +3,17 @@
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import math
 import os
+import tensorflow as tf
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+
+# ## LIMIT GPU USAGE
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    tf.config.experimental.set_memory_growth(gpus[0], True)
+sess = tf.compat.v1.Session()
+tf.compat.v1.keras.backend.set_session(sess)
+import torch
+
 # from keras.optimizers import adam_v2
 from model import *
 from Capsule_MPNN import *
@@ -12,8 +23,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import math
-import os
-from keras.optimizers.legacy import Adam
+from keras.optimizers import Adam
 import keras.backend as K
 
 
@@ -65,7 +75,7 @@ import pickle
 from util import get_test_validation
 
 
-def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, ep, sl, path, taxonomy,dti, batchsize=64):
+def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, ep, sl, path, taxonomy,dti, batchsize=32):
     # global model_1
     adam = Adam(learning_rate=lr)
     # adam=tf.keras.optimizers.Adam(learning_rate=lr)
@@ -91,8 +101,8 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
 
     if "bert_chemmolefusion_capsule" in model_type:
         param_grid = {
-            "target_dense": [200],
-            "batch_size": [64],
+            "target_dense": [400],
+            "batch_size": [32],
             "seq_len": sl,
             "message_units": [64],
             "message_steps": [4],
@@ -256,16 +266,33 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
 def evaluate(model_parh, test_p, test_d, test_y, model_name):
     print("=============Start Evaluate! ===========", flush=True)
     # print(model_name)
-    model = load_model(model_parh, compile=False,custom_objects={'Capsule': Capsule, 'Length': Length,'TransformerEncoderReadout': TransformerEncoderReadout})
-    adam = Adam(learning_rate=1e-4)
-    model.compile(loss="binary_crossentropy", optimizer=adam,
-                    metrics=[custom_f1, 'accuracy', 'AUC', tf.keras.metrics.Precision(), tf.keras.metrics.Recall(),
-                             tf.keras.metrics.TruePositives(), tf.keras.metrics.TrueNegatives(),
-                             tf.keras.metrics.FalsePositives(), tf.keras.metrics.FalseNegatives()])
-    pred0 = model.predict([np.array(test_p), np.array(test_d)])  # 输出的是整数标签
+    if "onehot_MPNN_capsule" in model_name:
+        # model = load_model(model_parh+"2")
+        model = keras.models.load_model(model_name + "/" + model_name + ".h52", compile=False,
+                                        custom_objects={'Capsule': Capsule, 'Length': Length,
+                                                        'MessagePassing': MessagePassing,
+                                                        'TransformerEncoderReadout': TransformerEncoderReadout})
+    elif "bert_MPNN_capsule" in model_name:
+        model = keras.models.load_model(model_name + "/" + model_name + ".h5", compile=False,
+                                        custom_objects={'Capsule': Capsule, 'Length': Length,
+                                                        'MessagePassing': MessagePassing,
+                                                        'TransformerEncoderReadout': TransformerEncoderReadout})
+    else:
+        model = load_model(model_parh, compile=False,
+                           custom_objects={'Capsule': Capsule, 'Length': Length, 'MessagePassing': MessagePassing,
+                                           'TransformerEncoderReadout': TransformerEncoderReadout})
+    if (model_name.find("MPNN") == -1):
+        pred0 = model.predict([test_p, np.array(test_d)])  # 输出的是整数标签
+    else:
+        if "fingerprint_MPNN" in model_name:
+            test_dataset = MPNNDataset2(test_p, test_d[0], test_d[1], test_y)
+            pred0 = model.predict(test_dataset)
+        else:
+            test_dataset = MPNNDataset(test_p, test_d, test_y)
+            pred0 = model.predict(test_dataset)  # 输出的是整数标签
 
     pred = np.argmax(pred0, -1)
-    print(pred0,pred)
+    # print(pred)
     confusion = metrics.confusion_matrix(np.array(test_y)[:, 1], pred)
     # np.array(test_y)[:,1],y_score[:,1]
     TP = confusion[1, 1]
@@ -278,30 +305,30 @@ def evaluate(model_parh, test_p, test_d, test_y, model_name):
     precision = precision_score(np.array(test_y)[:, 1], pred)
     accuracy = accuracy_score(np.array(test_y)[:, 1], pred)
     f1 = f1_score(np.array(test_y)[:, 1], pred)
-    # aucroc = roc_auc_score(np.array(test_y)[:, 1], pred0[:, 1])
+    aucroc = roc_auc_score(np.array(test_y)[:, 1], pred0[:, 1])
     # aupr=average_precision_score(np.array(test_y)[:,1],pred0[:,1])
-    fpr0, tpr0, thresholds0 = metrics.roc_curve(np.array(test_y)[:, 1], pred)
+    fpr0, tpr0, thresholds0 = metrics.roc_curve(np.array(test_y)[:, 1], pred0[:, 1])
     auc_v = metrics.auc(fpr0, tpr0)
-    precision0, recall, thresholds = metrics.precision_recall_curve(np.array(test_y)[:, 1], pred)
+    precision0, recall, thresholds = metrics.precision_recall_curve(np.array(test_y)[:, 1], pred0[:, 1])
     area = metrics.auc(recall, precision0)
-    print("sensitivity", round(sensitivity, 4))
-    print("specificity", round(specificity, 4))
-    print("precision", round(precision, 4))
-    print("accuracy", round(accuracy, 4))
+    print("sensitivity", round(sensitivity, 3))
+    print("specificity", round(specificity, 3))
+    print("precision", round(precision, 3))
+    print("accuracy", round(accuracy, 3))
     print("f1", round(f1, 3))
     print("TP:", TP)
     print("TN:", TN)
     print("FP:", FP)
     print("FN:", FN)
-    print("aucroc:", round(auc_v, 4))
-    print("aupr:", round(area, 4))
+    print("aucroc:", round(auc_v, 3))
+    print("aupr:", round(area, 3))
 
     with open(os.path.join(model_name, "performance.txt"), "w") as fw:
         fw.write(
             "Evaluation metrics" + "\t" + "sensitivity" + "\t" + "specificity" + "\t" + "precision" + "\t" + "accuracy" + "\t" + "f1" + "\t" + "aucroc" + "\t" + "aupr" + "\n")
-        fw.write("Value" + "\t" + str(round(sensitivity, 4)) + "\t" + str(round(specificity, 4)) + "\t" + str(
-            round(precision, 4)) + "\t" + str(round(accuracy, 4)) + "\t" + str(round(f1, 4)) + "\t" + str(
-            round(auc_v, 4)) + "\t" + str(round(area, 4)) + "\n")
+        fw.write("Value" + "\t" + str(round(sensitivity, 3)) + "\t" + str(round(specificity, 3)) + "\t" + str(
+            round(precision, 3)) + "\t" + str(round(accuracy, 3)) + "\t" + str(round(f1, 3)) + "\t" + str(
+            round(auc_v, 3)) + "\t" + str(round(area, 3)) + "\n")
         df_evaluate = pd.DataFrame({"dataset":[dti],"classifier": [model_name], "accuracy": [
             str(accuracy)], "specificity": [
             str(specificity)],
@@ -387,7 +414,10 @@ if __name__ == '__main__':
     import os
     import time
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = gpu
+    # os.environ['CUDA_VISIBLE_DEVICES'] = gpu
+    # gpu_options = tf.compat.v1.GPUOptions(allow_growth=True)
+    # config = tf.compat.v1.ConfigProto(gpu_options=gpu_options)
+    # session = tf.compat.v1.Session(config=config)
     # os.environ['TF_GPU_ALLOCATOR'] = 'cuda_malloc_async'
     # print(os.getenv('TF_GPU_ALLOCATOR'))
 

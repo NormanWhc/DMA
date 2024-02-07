@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import math
 import os
-from keras.optimizers.legacy import Adam
+from keras.optimizers import Adam
 import keras.backend as K
 
 
@@ -90,7 +90,7 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
 
     if "onehot_mole_dense" in model_type:
         param_grid = {
-            "target_dense": [200,400],
+            "target_dense": [400],
             "batch_size": [64],
             "seq_len": sl,
             "message_units": [64],
@@ -98,8 +98,8 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
             "num_attention_heads": [8],
             "dense_units": [512],
             "num_capsule": [2],
-            "routings": [3,6],
-            "kernel_size": [5,10],
+            "routings": [6],
+            "kernel_size": [10],
         }
         # with open(os.path.join(train_path, "search_process.txt"), "w") as fw:
         fw = open(os.path.join(train_path, "search_process.txt"), "w")
@@ -455,7 +455,6 @@ if __name__ == '__main__':
         fw.close()
 
     train_p, test_p, train_d, test_d, train_y, test_y = split(protein, drug, y, drug_descripter, model_name,dti)
-    print(train_p, train_d, train_y, "train")
     history1, model = fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_name, learning_rate, n_epoch,
                               protein_sequence_length, ".", model_name,dti, batchsize=batch_size)
     # model = fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_name, learning_rate, n_epoch,

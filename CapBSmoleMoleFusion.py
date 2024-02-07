@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import math
 import os
-from keras.optimizers.legacy import Adam
+from keras.optimizers import Adam
 import keras.backend as K
 
 
@@ -91,7 +91,7 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
 
     if "bert_smolemolefusion_capsule" in model_type:
         param_grid = {
-            "target_dense": [200],
+            "target_dense": [400],
             "batch_size": [64],
             "seq_len": sl,
             "message_units": [64],

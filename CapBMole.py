@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import math
 import os
-from keras.optimizers.legacy import Adam
+from keras.optimizers import Adam
 import keras.backend as K
 
 

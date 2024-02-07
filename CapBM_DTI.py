@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import math
 import os
-from keras.optimizers.legacy import Adam
+from keras.optimizers import Adam
 import keras.backend as K
 
 
@@ -132,29 +132,29 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
                                                 2) + "," + str(3) + "," + str(5) + "\n")
                                             fw.close()
                                             for i, (train_index, val_index) in enumerate(cv.split(train_p)):
-                                                # train_p_train, train_p_val = train_p[train_index], train_p[
-                                                #     val_index]
-                                                # train_d0, train_d1, train_d2 = train_d
-                                                # train_d0_train, train_d0_val = np.array(train_d0)[train_index], \
-                                                #     np.array(train_d0)[val_index]
-                                                # train_d1_train, train_d1_val = np.array(train_d1)[train_index], \
-                                                #     np.array(train_d1)[val_index]
-                                                # train_d2_train, train_d2_val = np.array(train_d2)[train_index], \
-                                                #     np.array(train_d2)[val_index]
-                                                # train_d_train = (
-                                                #     tf.ragged.constant(train_d0_train, dtype=tf.float32),
-                                                #     tf.ragged.constant(train_d1_train, dtype=tf.float32),
-                                                #     tf.ragged.constant(train_d2_train, dtype=tf.int64))
-                                                # train_d_val = (tf.ragged.constant(train_d0_val, dtype=tf.float32),
-                                                #                tf.ragged.constant(train_d1_val, dtype=tf.float32),
-                                                #                tf.ragged.constant(train_d2_val, dtype=tf.int64))
-                                                #
-                                                # train_y_train, train_y_val = train_y[train_index], train_y[
-                                                #     val_index]
-                                                # train_dataset = MPNNDataset(train_p_train, train_d_train,
-                                                #                             train_y_train)
-                                                # valid_dataset = MPNNDataset(train_p_val, train_d_val, train_y_val)
-                                                train_y_val,train_dataset,valid_dataset = get_test_validation_MPNN(train_p, train_d, train_y, dti)
+                                                train_p_train, train_p_val = train_p[train_index], train_p[
+                                                    val_index]
+                                                train_d0, train_d1, train_d2 = train_d
+                                                train_d0_train, train_d0_val = np.array(train_d0)[train_index], \
+                                                    np.array(train_d0)[val_index]
+                                                train_d1_train, train_d1_val = np.array(train_d1)[train_index], \
+                                                    np.array(train_d1)[val_index]
+                                                train_d2_train, train_d2_val = np.array(train_d2)[train_index], \
+                                                    np.array(train_d2)[val_index]
+                                                train_d_train = (
+                                                    tf.ragged.constant(train_d0_train, dtype=tf.float32),
+                                                    tf.ragged.constant(train_d1_train, dtype=tf.float32),
+                                                    tf.ragged.constant(train_d2_train, dtype=tf.int64))
+                                                train_d_val = (tf.ragged.constant(train_d0_val, dtype=tf.float32),
+                                                               tf.ragged.constant(train_d1_val, dtype=tf.float32),
+                                                               tf.ragged.constant(train_d2_val, dtype=tf.int64))
+
+                                                train_y_train, train_y_val = train_y[train_index], train_y[
+                                                    val_index]
+                                                train_dataset = MPNNDataset(train_p_train, train_d_train,
+                                                                            train_y_train)
+                                                valid_dataset = MPNNDataset(train_p_val, train_d_val, train_y_val)
+                                                # train_y_val,train_dataset,valid_dataset = get_test_validation_MPNN(train_p, train_d, train_y, dti)
                                                 model_1 = model_bert_MPNN_capsule(
                                                     # target_dense=target_dense,
                                                     #                                 batch_size=batch_size,

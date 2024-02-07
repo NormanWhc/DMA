@@ -1,6 +1,16 @@
 # import os
 # #os.environ['TF_GPU_ALLOCATOR'] = 'cuda_malloc_async'
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+import os
+import tensorflow as tf
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+
+# ## LIMIT GPU USAGE
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    tf.config.experimental.set_memory_growth(gpus[0], True)
+sess = tf.compat.v1.Session()
+tf.compat.v1.keras.backend.set_session(sess)
 import math
 import os
 # from keras.optimizers import adam_v2
@@ -13,7 +23,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import math
 import os
-from keras.optimizers.legacy import Adam
+from keras.optimizers import Adam
 import keras.backend as K
 
 
@@ -91,7 +101,7 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
 
     if "bert_fingerprint_capsule" in model_type:
         param_grid = {
-            "target_dense": [200,400],
+            "target_dense": [400],
             "batch_size": [64],
             "seq_len": sl,
             "message_units": [64],
@@ -99,8 +109,8 @@ def fitting(train_p, test_p, train_d, test_d, train_y, test_y, model_type, lr, e
             "num_attention_heads": [8],
             "dense_units": [512],
             "num_capsule": [2],
-            "routings": [3,6],
-            "kernel_size": [5,10],
+            "routings": [6],
+            "kernel_size": [10],
         }
         # with open(os.path.join(train_path, "search_process.txt"), "w") as fw:
         fw = open(os.path.join(train_path, "search_process.txt"), "w")
@@ -415,21 +425,17 @@ if __name__ == '__main__':
     if not os.path.exists(model_name):
         os.makedirs(model_name)
 
-    import os
-    import time
-
-    os.environ['CUDA_VISIBLE_DEVICES'] = gpu
-    # os.environ['TF_GPU_ALLOCATOR'] = 'cuda_malloc_async'
-    # print(os.getenv('TF_GPU_ALLOCATOR'))
-
-    # from tensorflow.python.keras.backend import set_session
-
-    # ## LIMIT GPU USAGE
-    # config = tf.compat.v1.ConfigProto()
-    # config.gpu_options.allow_growth = True  # don't pre-allocate memory; allocate as-needed
-    # config.gpu_options.per_process_gpu_memory_fraction = 0.95  # limit memory to be allocated
-
-    # set_session(tf.compat.v1.Session(config=config)) # create sess w/ above settings
+    # import os
+    # import time
+    #
+    # os.environ['CUDA_VISIBLE_DEVICES'] = gpu
+    #
+    # # ## LIMIT GPU USAGE
+    # gpus = tf.config.experimental.list_physical_devices('GPU')
+    # if gpus:
+    #     tf.config.experimental.set_memory_growth(gpus[0], True)
+    # sess = tf.compat.v1.Session()
+    # tf.compat.v1.keras.backend.set_session(sess)
 
     model_name_list = model_name.split("_")
     model_name_normal = model_name_list[0] + "_" + model_name_list[1] + "_"

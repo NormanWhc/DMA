@@ -2,14 +2,19 @@ from Bio import SeqIO
 from Bio.SeqUtils.ProtParam import ProteinAnalysis as PA
 import pandas as pd
 import numpy as np
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+import tensorflow as tf
+tf.config.list_physical_devices('GPU')
 # from tensorflow.keras.datasets import mnist
 from keras.utils import to_categorical
 from keras.models import Sequential, Model
 from keras.layers import Dense, Input, Flatten, concatenate, Reshape,BatchNormalization, MultiHeadAttention, Concatenate, Dropout
 import keras.backend as K
+import tensorflow as tf
 # from keras.layers.recurrent import SimpleRNN
 # from keras import layers
-# from keras.optimizers import Adam
+from keras.optimizers import Adam
 # from CapsuleLayer import Capsule
 import matplotlib.pyplot as plt
 # from matplotlib import pyplot as plt
@@ -25,7 +30,7 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from Capsule_MPNN import *
 from ReadData import *
-from keras.optimizers.legacy import Adam
+# from keras.optimizers.legacy import Adam
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 # import pickle
@@ -861,7 +866,7 @@ def model_bert_mole_attention(param):
 
 def model_onehot_mole_dense(param):
     # sequence_input_1 = Input(shape=(param['seq_len'], 21))
-    sequence_input_1 = Input(shape=(param['seq_len'],6))
+    sequence_input_1 = Input(shape=(1024,6))
     # model_p=Conv1D(filters=filter_num,kernel_size=kernel_size,padding="same",activation="relu")(sequence_input_1)
     # model_p=BatchNormalization()(model_p)·
     # model_p=GlobalAveragePooling1D()(model_p)
@@ -1539,34 +1544,34 @@ def model_bert_smolemolefusion_attention(param):
     return model
 
 def model_bert_chemmolefusion_capsule(param):
+    with tf.device('/gpu:0'):
+        sequence_input_1 = Input(shape=768)
+        model_p = Flatten()(sequence_input_1)
+        model_p = Dense(400, activation='relu')(model_p)
+        # model_p = Dropout(0.3)(model_p)
+        model_p = BatchNormalization()(model_p)
 
-    sequence_input_1 = Input(shape=768)
-    model_p = Flatten()(sequence_input_1)
-    model_p = Dense(512, activation='relu',kernel_regularizer=keras.regularizers.l2(0.001))(model_p)
-    # model_p = Dropout(0.3)(model_p)
-    model_p = BatchNormalization()(model_p)
+        sequence_input_2 = Input(shape=684)
+        model_d = Flatten()(sequence_input_2)
+        model_d = Dense(400, activation='relu')(model_d)
+        # model_d = Dropout(0.3)(model_d)
+        model_d = BatchNormalization()(model_d)
 
-    sequence_input_2 = Input(shape=684)
-    model_d = Flatten()(sequence_input_2)
-    model_d = Dense(512, activation='relu',kernel_regularizer=keras.regularizers.l2(0.001))(model_d)
-    # model_d = Dropout(0.3)(model_d)
-    model_d = BatchNormalization()(model_d)
+        model = concatenate([model_p, model_d])
+        model = Reshape((-1, 8))(model)
 
-    model = concatenate([model_p, model_d])
-    model = Reshape((-1, 8))(model)
+        primarycaps = PrimaryCap(model, dim_vector=8, n_channels=8, kernel_size=param['kernel_size'], strides=1,
+                                 padding='valid')
+        capsule = Capsule(num_capsule=param['num_capsule'], dim_capsule=16, routings=param['routings'],
+                          share_weights=True)(
+            primarycaps)
 
-    primarycaps = PrimaryCap(model, dim_vector=8, n_channels=8, kernel_size=param['kernel_size'], strides=1,
-                             padding='valid')
-    capsule = Capsule(num_capsule=param['num_capsule'], dim_capsule=16, routings=param['routings'],
-                      share_weights=True)(
-        primarycaps)
+        length = Length()(capsule)
 
-    length = Length()(capsule)
+        model = Model(inputs=[sequence_input_1, sequence_input_2], outputs=length)
+        model.summary()
 
-    model = Model(inputs=[sequence_input_1, sequence_input_2], outputs=length)
-    model.summary()
-
-    return model
+        return model
 
 def model_bert_chemmolefusion_dense(param):
 
